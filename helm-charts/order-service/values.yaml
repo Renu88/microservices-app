@@ -1,0 +1,14 @@
+name: order-service
+
+replicaCount: 2
+
+image:
+  repository: order-service
+  tag: v1
+  pullPolicy: Never
+
+service:
+  port: 5001
+  type: NodePort
+
+greetingServiceUrl: "http://greeting-service:5000"

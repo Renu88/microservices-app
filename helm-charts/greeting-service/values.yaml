@@ -1,0 +1,12 @@
+name: greeting-service
+
+replicaCount: 3
+
+image:
+  repository: greeting-service
+  tag: v1
+  pullPolicy: Never
+
+service:
+  port: 5000
+  type: ClusterIP
