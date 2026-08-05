@@ -1,0 +1,48 @@
+pipeline {
+    agent any
+
+    environment {
+        SONAR_PROJECT_KEY = 'greeting-service'
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Install dependencies') {
+            steps {
+                sh 'pip install -r requirements.txt --break-system-packages'
+            }
+        }
+
+        stage('SonarQube scan') {
+            steps {
+                withSonarQubeEnv('sonarqube') {
+                    sh '''
+                        sonar-scanner \
+                          -Dsonar.projectKey=${SONAR_PROJECT_KEY} \
+                          -Dsonar.sources=.
+                    '''
+                }
+            }
+        }
+
+        stage('Docker build') {
+            steps {
+                sh 'docker build -t greeting-service:${BUILD_NUMBER} .'
+            }
+        }
+    }
+
+    post {
+        success {
+            echo "Pipeline succeeded - image greeting-service:${BUILD_NUMBER} built"
+        }
+        failure {
+            echo "Pipeline failed - check the stage logs above"
+        }
+    }
+}
